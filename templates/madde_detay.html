@@ -1,0 +1,15 @@
+<div class="detay-container">
+    <h2>{{ madde.baslik }}</h2>
+    {% for anlam in madde.anlamlar %}
+        <div class="anlam-kutusu">
+            <div class="anlam-numara">{{ loop.index }}.</div>
+            <div class="anlam-icerik">{{ anlam.icerik }}</div>
+            {% if anlam.kunyeler %}
+                <div class="anlam-kunye">{{ anlam.kunyeler[0].bilgi }}</div>
+            {% endif %}
+        </div>
+    {% endfor %}
+    <div class="detay-buttons">
+        <button class="buton" onclick="maddeyiDuzenle({{ madde.id }})">✏️ Düzelt</button>
+    </div>
+</div>

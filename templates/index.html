@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bilgi Bankası</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://unpkg.com/vis-network/styles/vis-network.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background: #f0f4f8;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 1rem;
+    }
+
+    h1 {
+      font-weight: 900;
+      font-size: 3rem;
+      color: #0d6efd;
+      text-align: center;
+      text-shadow: 2px 2px 6px rgba(13, 110, 253, 0.3);
+      margin-bottom: 2rem;
+      letter-spacing: 2px;
+    }
+
+    #madde-listesi {
+      max-height: 80vh;
+      overflow-y: auto;
+      cursor: pointer;
+    }
+
+    #madde-listesi .madde-item {
+      padding: 10px;
+      cursor: pointer;
+      user-select: none;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.3s ease;
+    }
+
+    #madde-listesi .madde-item:hover {
+      background-color: #dbe9ff;
+    }
+
+    #madde-listesi .madde-item.active {
+      background-color: #0d6efd;
+      color: white;
+      font-weight: 600;
+    }
+
+    #madde-buttons button {
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    #madde-buttons .btn-success {
+      background-color: #28a745;
+      border-color: #28a745;
+    }
+
+    #madde-buttons .btn-success:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+    }
+
+    #madde-buttons .btn-warning {
+      background-color: #ffc107;
+      border-color: #ffc107;
+      color: #212529;
+    }
+
+    #madde-buttons .btn-warning:hover {
+      background-color: #e0a800;
+      border-color: #d39e00;
+    }
+
+    #madde-buttons .btn-danger {
+      background-color: #dc3545;
+      border-color: #dc3545;
+    }
+
+    #madde-buttons .btn-danger:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+    }
+
+    #harf-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 1rem;
+      justify-content: center;
+    }
+
+    #harf-filter button {
+      flex: 0 0 auto;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background-color: #ffffff;
+      color: #333;
+      font-weight: 500;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    #harf-filter button:hover {
+      background-color: #e6f0ff;
+      border-color: #0d6efd;
+      color: #0d6efd;
+    }
+
+    #anlamlar-container .card {
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      background: white;
+    }
+
+    #anlamlar-container .card:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    #anlamlar-container .btn-warning {
+      background-color: #f0ad4e;
+      border: none;
+    }
+
+    #anlamlar-container .btn-warning:hover {
+      background-color: #ec971f;
+    }
+
+    #anlamlar-container .btn-danger {
+      background-color: #d9534f;
+      border: none;
+    }
+
+    #anlamlar-container .btn-danger:hover {
+      background-color: #c9302c;
+    }
+
+    .anlam-buttons {
+      text-align: right;
+      margin-top: 8px;
+    }
+
+    .anlam-buttons button {
+      margin-left: 8px;
+    }
+
+    #graph-container {
+      background: #ffffff;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      height: 400px;
+      display: none;
+    }
+
+    .vis-network {
+      background-color: #f0f8ff !important;
+    }
+
+    #madde-buttons {
+      transition: margin 0.3s ease;
+    }
+
+    #harf-filter-wrapper {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1 class="mb-4 text-center display-4 fw-bold text-primary" style="text-shadow: 1px 1px 2px #ccc;">
+    📘 Bilgi Bankası
+  </h1>
+
+  <!-- Harf filtreleri + Tümünü Göster -->
+  <div id="harf-filter-wrapper">
+    <div id="harf-filter" class="btn-group" role="group" aria-label="Alfabe filtre"></div>
+    </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <button id="btn-madde-ekle" class="btn btn-primary mb-2 w-100">+ Madde Ekle</button>
+      <div id="madde-listesi" class="list-group border rounded"></div>
+    </div>
+
+    <div class="col-md-8">
+      <h2 id="detay-baslik">Bir madde seçiniz</h2>
+      <div id="anlamlar-container" class="mb-3"></div>
+
+      <div id="madde-buttons" style="display:none;">
+        <button id="btn-anlam-ekle" class="btn btn-success">+ Anlam Ekle</button>
+        <button id="btn-madde-duzenle" class="btn btn-warning">Madde Düzenle</button>
+        <button id="btn-madde-sil" class="btn btn-danger">Madde Sil</button>
+        <button id="btn-export-word" class="btn btn-info">Word Olarak İndir</button>
+        <button id="btn-export-all" class="btn btn-success">📥 Tümünü Word'e Aktar</button>
+        <button id="btn-kavram-haritasi" class="btn btn-secondary">Kavram Haritası</button>
+      </div>
+
+      <div id="graph-container" class="border rounded mt-4"></div>
+    </div>
+  </div>
+
+  <!-- Madde Ekle Modal -->
+  <div class="modal fade" id="maddeEkleModal" tabindex="-1" aria-labelledby="maddeEkleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form id="maddeEkleForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="maddeEkleModalLabel">Yeni Madde Ekle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="maddeBaslikInput" class="form-label">Madde Başlığı</label>
+            <input type="text" class="form-control" id="maddeBaslikInput" required>
+          </div>
+
+          <div id="anlamlarContainer">
+            <div class="anlam-grubu mb-3">
+              <label class="form-label">Anlam</label>
+              <textarea class="form-control anlam-metin" rows="2" required></textarea>
+              <label class="form-label mt-2">Künye (virgülle ayır)</label>
+              <input type="text" class="form-control anlam-kunye">
+            </div>
+          </div>
+
+          <button type="button" id="btnAnlamEkleModal" class="btn btn-sm btn-outline-primary">+ Anlam Ekle</button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+          <button type="submit" class="btn btn-primary">Ekle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+  <!-- JS -->
+  <script src="/static/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+  if (typeof network !== "undefined") {
+    network.on("click", function (params) {
+      if (params.nodes.length === 1) {
+        const nodeId = params.nodes[0];
+        const nodeLabel = nodes.get(nodeId).label;
+
+        // Sunucudan madde bilgisi alınır
+        fetch(`/api/maddebasi/by-baslik/${encodeURIComponent(nodeLabel)}`)
+          .then(res => res.json())
+          .then(madde => {
+            if (!madde.id) {
+              alert("Madde bulunamadı.");
+              return;
+            }
+
+            // Ekrandaki div'lerden bu maddeye ait olanı bul
+            const maddeDiv = Array.from(document.querySelectorAll(".madde-item"))
+              .find(div => div.textContent.trim().toLowerCase() === nodeLabel.trim().toLowerCase());
+
+            if (maddeDiv) {
+              maddeSec(madde.id, maddeDiv); // 🔁 Zaten tanımlı olan fonksiyon
+              maddeDiv.scrollIntoView({ behavior: "smooth", block: "center" });
+            } else {
+              alert("Madde listede bulunamadı.");
+            }
+          })
+          .catch(err => {
+            console.error("Hata:", err);
+            alert("Veri alınamadı.");
+          });
+      }
+    });
+  }
+});
+</script>
+
+</body>
+</html>

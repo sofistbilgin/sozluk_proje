@@ -1,0 +1,24 @@
+KURULUM REHBERİ
+
+1. GEREKLİLER:
+   - Python 3.8+
+   - pip
+
+2. VIRTUAL ENV OLUŞTUR:
+   python -m venv venv
+   venv\Scripts\activate  (Windows)
+   source venv/bin/activate (Mac/Linux)
+
+3. GEREKLİ PAKETLERİ KUR:
+   pip install flask sqlalchemy
+
+4. VERİTABANINI OLUŞTUR:
+   python app.py (bu ilk çalıştırmada sozluk.db dosyası oluşur)
+
+5. TARAYICIDAN AÇ:
+   http://127.0.0.1:5000
+
+HER ŞEY TEK SAYFADA:
+   - Sol: Madde başlıkları (alfabetik)
+   - Sağ: Madde detayları (anlam, künye, düzeltme, silme)
+   - En üstte harflerle filtreleme barı

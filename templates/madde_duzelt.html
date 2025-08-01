@@ -1,0 +1,51 @@
+<div class="container" id="duzenleme-paneli">
+    <h1>Madde Düzenle - {{ madde.baslik }}</h1>
+    <form method="POST">
+        <label for="baslik">Madde Başlığı</label>
+        <input type="text" id="baslik" name="baslik" value="{{ madde.baslik }}" required />
+
+        <div id="anlamlar-container">
+            {% for anlam in madde.anlamlar %}
+                <div class="anlam-kutusu">
+                    <label>Anlam {{ loop.index }}</label>
+                    <textarea name="anlam_icerik" rows="3" required>{{ anlam.icerik }}</textarea>
+                    <label>Künye {{ loop.index }}</label>
+                    <input type="text" name="kunye_bilgi" value="{% if anlam.kunyeler and anlam.kunyeler[0].bilgi %}{{ anlam.kunyeler[0].bilgi }}{% endif %}" />
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="add-anlam-btn" onclick="yeniAnlamEkle()">+ Anlam Ekle</button>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn">Kaydet</button>
+            <button type="button" class="btn btn-secondary" onclick="geriDon()">İptal</button>
+            <form method="POST" action="{{ url_for('sil', id=madde.id) }}" style="display:inline;" onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
+                <button type="submit" class="btn btn-danger">🗑️ Sil</button>
+            </form>
+        </div>
+    </form>
+</div>
+
+<script>
+    function yeniAnlamEkle() {
+        const container = document.getElementById('anlamlar-container');
+        const index = container.children.length + 1;
+        const anlamKutusu = document.createElement('div');
+        anlamKutusu.className = 'anlam-kutusu';
+        anlamKutusu.innerHTML = `
+            <label>Anlam ${index}</label>
+            <textarea name="anlam_icerik" rows="3" required></textarea>
+            <label>Künye ${index}</label>
+            <input type="text" name="kunye_bilgi" placeholder="Künye bilgisi" />
+        `;
+        container.appendChild(anlamKutusu);
+    }
+
+    function geriDon() {
+        document.getElementById("duzenleme-paneli").style.display = "none";
+        document.getElementById("detay-paneli").style.display = "block";
+    }
+</script>

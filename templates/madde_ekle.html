@@ -1,0 +1,45 @@
+<div class="container" id="ekleme-paneli">
+    <h1>Yeni Madde Ekle</h1>
+    <form method="POST">
+        <label for="baslik">Madde Başlığı</label>
+        <input type="text" id="baslik" name="baslik" required />
+
+        <div id="anlamlar-container">
+            <div class="anlam-kutusu">
+                <label>Anlam 1</label>
+                <textarea name="anlam_icerik" rows="3" required></textarea>
+                <label>Künye 1</label>
+                <input type="text" name="kunye_bilgi" placeholder="Künye bilgisi" />
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="add-anlam-btn" onclick="yeniAnlamEkle()">+ Anlam Ekle</button>
+        </div>
+
+        <div class="button-group" style="margin-top: 30px;">
+            <button type="submit" class="btn">Kaydet</button>
+            <button type="button" class="btn btn-secondary" onclick="iptal()">İptal</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function yeniAnlamEkle() {
+        const container = document.getElementById('anlamlar-container');
+        const index = container.children.length + 1;
+        const anlamKutusu = document.createElement('div');
+        anlamKutusu.className = 'anlam-kutusu';
+        anlamKutusu.innerHTML = `
+            <label>Anlam ${index}</label>
+            <textarea name="anlam_icerik" rows="3" required></textarea>
+            <label>Künye ${index}</label>
+            <input type="text" name="kunye_bilgi" placeholder="Künye bilgisi" />
+        `;
+        container.appendChild(anlamKutusu);
+    }
+
+    function iptal() {
+        document.getElementById("ekleme-paneli").style.display = "none";
+    }
+</script>
