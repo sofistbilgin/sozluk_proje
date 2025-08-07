@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Giriş Yap</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="giris-kutusu">
+        <h2>Giriş Yap</h2>
+        <form method="POST">
+            <input type="text" name="kullanici" placeholder="Kullanıcı Adı" required><br>
+            <input type="password" name="sifre" placeholder="Şifre" required><br>
+            <button type="submit">Giriş</button>
+        </form>
+        {% if hata %}
+            <p style="color: red;">{{ hata }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>

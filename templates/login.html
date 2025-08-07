@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>Giriş Yap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 50px;
+    }
+    form {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #0d6efd;
+      color: white;
+      padding: 10px;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #0b5ed7;
+    }
+    .hata {
+      color: red;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <form method="POST">
+    <h2>Giriş Yap</h2>
+    {% if hata %}
+      <div class="hata">{{ hata }}</div>
+    {% endif %}
+    <label for="username">Kullanıcı Adı:</label>
+    <input type="text" id="username" name="username" required>
+
+    <label for="password">Şifre:</label>
+    <input type="password" id="password" name="password" required>
+
+    <button type="submit">Giriş Yap</button>
+  </form>
+</body>
+</html>
