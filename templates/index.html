@@ -291,3 +291,51 @@
 
 </body>
 </html>
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background-color: #f9f9f9;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logout {
+            text-decoration: none;
+            color: white;
+            background-color: #d9534f;
+            padding: 8px 16px;
+            border-radius: 5px;
+        }
+
+        .logout:hover {
+            background-color: #c9302c;
+        }
+
+        h1 {
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Hoş geldiniz!</h2>
+        <a class="logout" href="{{ url_for('cikis') }}">Çıkış Yap</a>
+    </div>
+
+    <hr>
+
+    <h1></h1>
+    <p>Semih Topsakal</p>
+</body>
+</html>
