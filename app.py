@@ -5,8 +5,12 @@ from docx import Document
 from io import BytesIO
 import re
 from sqlalchemy import func
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask import session, redirect, url_for, flash
+from flask import g
 
 app = Flask(__name__)
+app.secret_key = 'Stbt-5413'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///notdefteri.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -24,9 +28,51 @@ class Anlam(db.Model):
     metin = db.Column(db.Text, nullable=False)
     kunyeler = db.Column(db.PickleType, default=[])
 
-@app.route('/')
+
+class Kullanici(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    kullanici_adi = db.Column(db.String(80), unique=True, nullable=False)
+    sifre_hash = db.Column(db.String(128), nullable=False)
+
+    def set_password(self, sifre):
+        self.sifre_hash = generate_password_hash(sifre)
+
+    def check_password(self, sifre):
+        return check_password_hash(self.sifre_hash, sifre)
+
+@app.route("/", methods=["GET", "POST"])
+def giris():
+    if request.method == "POST":
+        kullanici_adi = request.form.get("username")
+        sifre = request.form.get("password")
+        if kullanici_adi == "admin" and sifre == "1234":
+            session["giris_yapildi"] = True
+            return redirect("/panel")
+        else:
+            return render_template("login.html", hata="Hatalı kullanıcı adı veya şifre")
+    return render_template("login.html")
+
+@app.route("/panel")
+def panel():
+    if not session.get("giris_yapildi"):
+        return redirect(url_for("giris"))
+    return render_template("index.html")
+
+
+@app.route("/cikis")
+def cikis():
+    session.pop("giris_yapildi", None)
+    return redirect(url_for("giris"))
+
+
+
+@app.route("/index")
 def index():
-    return render_template('index.html')
+    if not session.get("giris_yapildi"):
+        return redirect(url_for("giris"))
+    return render_template("index.html")
+
+
 
 @app.route('/api/maddebasilar')
 def maddebasilar():
@@ -255,6 +301,7 @@ def maddebasi_by_baslik(baslik):
 
 
 
+
 @app.route('/istatistikler')
 def istatistikler():
     toplam_madde = db.session.query(Madde).count()
@@ -267,8 +314,13 @@ def istatistikler():
     })
 
 
+@app.before_request
+def kontrol():
+    izin_verilenler = ["giris", "static"]
+    if request.endpoint not in izin_verilenler and not session.get("giris_yapildi"):
+        return redirect(url_for("giris"))
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run()
+    app.run(debug=True)
