@@ -45,7 +45,7 @@ def giris():
     if request.method == "POST":
         kullanici_adi = request.form.get("username")
         sifre = request.form.get("password")
-        if kullanici_adi == "admin" and sifre == "1234":
+        if kullanici_adi == "Sofist" and sifre == "Stbt-5413":
             session["giris_yapildi"] = True
             return redirect("/panel")
         else:
